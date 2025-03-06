@@ -7,6 +7,14 @@ def recursion(tree, current):
         newNode = tree.insert(current, coef = 5)
         recursion(tree = tree, current = newNode)
 
+# PRINT FUNKCIJA
+# def print_tree(node, depth=0, max_depth=4):
+#     if depth > max_depth:
+#         return
+#     print("  " * depth + f"Node(num={node.number}, player={node.player}, points={node.points}, bank={node.bank})")
+#     for child in node.children:
+#         print_tree(child, depth + 1, max_depth)
+
 class Node:
 
     def __init__(self, number, player, children,  points = 0, bank=0):
@@ -48,7 +56,7 @@ class Tree:
             current.children.append(node1)
             return node1
 
-tree = Tree(number=20, player=1, children=[])
+tree = Tree(number=30, player=1, children=[])
 root = tree.root
 # tree.insert(root)
 
@@ -57,4 +65,5 @@ root = tree.root
 
 recursion(tree, root)
 
+# print_tree(tree.root)
 

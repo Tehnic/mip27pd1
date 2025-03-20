@@ -24,22 +24,10 @@ def show_from_mistake_to_multiplier_screen():
 
 
 
-#def other_start_game():
-#    global current_number
-#    user_input = entry.get()
-#    if user_input.isdigit() and 20 <= int(user_input) <= 30:
-#        current_number = int(user_input)
-#        show_multiplier_screen()
-#    else:
-#        print("Please enter a valid number between 20 and 30")
-
-
-
 def start_game():
     global current_number
     user_input = entry.get()
     if user_input.isdigit() and 20 <= int(user_input) <= 30:
-        #print("input mistake is ",input_mistake)
         current_number = int(user_input)
         current_number_label.config(text=str(current_number))
         show_multiplier_screen()
@@ -77,8 +65,7 @@ def update_number(multiplier):
     points_label.config(text=f"POINTS: {total_points}")
 
 # Initialize values
-#current_number = 20  # Example starting number
-current_number=0
+current_number = 20  # Example starting number
 bank_points = 0
 total_points = 0
 
@@ -183,7 +170,7 @@ mistake_instruction_label.pack(pady=10)
 mistake_entry = Entry(mistake_game_frame, font=("Arial", 14), width=10, justify="center", bg="lightgray")
 mistake_entry.pack(pady=10)
 
-mistake_input_mistake_label = Label(mistake_game_frame, text="Ievadītais skaitlis nav norādītajā diapazonā", font=("Comic Sans MS", 12, "bold"), fg="white", bg="#6A0DAD")
+mistake_input_mistake_label = Label(mistake_game_frame, text="THE ENTERED NUMBER IS OUTSIDE OF THE SPECIFIED NUMBER RANGE", font=("Comic Sans MS", 12, "bold"), fg="white", bg="#6A0DAD")
 mistake_input_mistake_label.pack(pady=10)
 
 #mistake_start_button = Button(mistake_game_frame, text="START", font=("Comic Sans MS", 14, "bold"), fg="black", bg="#FF69B4", width=10, command=mistake_start_game)

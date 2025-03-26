@@ -1,3 +1,5 @@
+from heuristic import calculate_heuristic
+
 limit = 3
 # Поиск в глубину с ограничением
 def depth_limited_search(node, limit, depth=0, coef=1):
@@ -5,6 +7,7 @@ def depth_limited_search(node, limit, depth=0, coef=1):
         return []
     
     result = [(node, coef)] 
+    node.heuristic = calculate_heuristic(node.number, node.points, node.bank)
     
     for child in node.children:
         child_results = depth_limited_search(child, limit, depth + 1, coef=child.number // node.number)

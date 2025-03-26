@@ -20,6 +20,9 @@ class Node:
         # Darbības parametri
         self.player = player
         self.children = children
+        self.heuristic = 0
+        self.algorithm_value = None
+        # self.addedCoef = None
 
 
 class Tree:
@@ -33,7 +36,8 @@ class Tree:
                 player = (current.player * (-1)),
                 points = (current.points + 1) if ((current.number * coef)%2 == 0) else (current.points - 1),
                 bank = (current.bank + 1) if ((current.number * coef) % 10 in {0,5}) else current.bank,
-                children=[]
+                children=[],
+                # addedCoef = coef
             )
             # node2 = Node(
             #     number = (current.number * 4), 
@@ -54,7 +58,7 @@ class Tree:
         if node is None:
             node = self.root
         # Форматированный вывод текущего узла с отступами:
-        print(" " * indent + f"Node(number={node.number}, player={node.player}, points={node.points}, bank={node.bank})")
+        print(" " * indent + f"Node(number={node.number}, player={node.player}, points={node.points}, bank={node.bank}, heuristic={node.heuristic})")
         for child in node.children:
             self.display(child, indent + 4)
 

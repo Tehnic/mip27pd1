@@ -1,0 +1,1 @@
+chosenPlayer = 0

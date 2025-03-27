@@ -1,5 +1,5 @@
-goal_number = 3000
-start_number = 20
+goal_number = 300000
+start_number = 23
 
 def recursion(tree, current):
     if current.number < goal_number:

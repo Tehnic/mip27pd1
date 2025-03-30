@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import Entry, Label
 
+import main
+
 def show_game_screen():
     algorithm_choice_frame.pack_forget()
     game_frame.pack(fill="both", expand=True)
@@ -23,7 +25,12 @@ def start_game():
     global current_number
     user_input = entry.get()
     if user_input.isdigit() and 20 <= int(user_input) <= 30:
+        main.generate_tree(int(user_input))
+        
         current_number = int(user_input)
+        if main.global_variables.chosenPlayer==1:
+            new_number=main.computer_logic(chosenAlgorithm, main.Tree(number=current_number, player=1, children=[]), 1)
+            current_number=new_number
         current_number_label.config(text=str(current_number))
         show_multiplier_screen()
     else:
@@ -34,7 +41,11 @@ def mistake_start_game():
     global current_number
     mistake_user_input = mistake_entry.get()
     if mistake_user_input.isdigit() and 20 <= int(mistake_user_input) <= 30:
+        main.generate_tree(int(mistake_user_input))
         current_number = int(mistake_user_input)
+        if main.global_variables.chosenPlayer==1:
+            new_number=main.computer_logic(chosenAlgorithm, main.Tree(number=current_number, player=1, children=[]), 1)
+            current_number=new_number
         current_number_label.config(text=str(current_number))
         show_from_mistake_to_multiplier_screen()
     else:
@@ -43,6 +54,7 @@ def mistake_start_game():
 def update_number(multiplier):
     global current_number, bank_points, total_points
     current_number *= multiplier
+    print("Player just did the move, curent number",current_number)
     if current_number % 2 == 0:
         total_points += 1
     else:
@@ -53,10 +65,38 @@ def update_number(multiplier):
     bank_label.config(text=f"BANK: {bank_points}")
     points_label.config(text=f"POINTS: {total_points}")
 
-    if current_number >= 3000:
+    if current_number >= 300000:
         final_score = total_points + bank_points
         winner = "first" if final_score % 2 == 0 else "second"
         show_result_screen(winner, final_score % 2 == 0)
+    
+    
+    if current_number < 300000:
+        print("Before AI move  total_points=",total_points," bank_points=",bank_points," final_score=",(total_points+bank_points))
+        
+        new_number=main.computer_logic(chosenAlgorithm, main.Tree(number=current_number, player=1, children=[]), 1)
+        print("AI did move, number is ",new_number)
+        current_number=new_number
+        print("Now current number ", current_number)
+        
+        
+        if current_number % 2 == 0:
+            total_points += 1
+        else:
+            total_points -= 1
+        if current_number % 10 == 0 or current_number % 10 == 5:
+            bank_points += 1
+        current_number_label.config(text=str(current_number))
+        bank_label.config(text=f"BANK: {bank_points}")
+        points_label.config(text=f"POINTS: {total_points}")
+
+        if current_number >= 300000:
+            final_score = total_points + bank_points
+            winner = "first" if final_score % 2 == 0 else "second"
+            show_result_screen(winner, final_score % 2 == 0)
+        
+        print("AFTER AI  total_points=",total_points," bank_points=",bank_points," final_score=",(total_points+bank_points))
+        #print(main.currentNode.player)
 
 
 def show_start_choice_screen():
@@ -64,15 +104,26 @@ def show_start_choice_screen():
     start_choice_frame.pack(fill="both", expand=True)
 
 def start_as_user():
+    main.choose_player(-1)
     start_choice_frame.pack_forget()
     algorithm_choice_frame.pack(fill="both", expand=True)
 
 def start_as_computer():
+    main.choose_player(1)
     start_choice_frame.pack_forget()
     algorithm_choice_frame.pack(fill="both", expand=True)
 
 
 def choose_algorithm(algo):
+    global chosenAlgorithm
+    if algo == "min-max":
+        choose_algorithm(int(0))
+        chosenAlgorithm=0
+    elif algo == "alpha-beta":
+        choose_algorithm(int(1))
+        chosenAlgorithm=1
+    else:
+        return    
     print(f"Chosen algorithm: {algo}")
     algorithm_choice_frame.pack_forget()
     show_game_screen()
@@ -105,8 +156,8 @@ def restart_game():
     points_label.config(text=f"POINTS: {total_points}")
 
 
-
-
+first_move_done=False
+chosenAlgorithm=0
 current_number = 20
 bank_points = 0
 total_points = 0

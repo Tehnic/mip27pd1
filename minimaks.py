@@ -1,5 +1,8 @@
+import global_variables
+
 limit = 3
 def minimaks_algorithm(node, limit, depth=0):
+    global_variables.visitedNodes += 1
     if depth > limit:
         return []
     elif depth == limit or not node.children:

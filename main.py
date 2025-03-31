@@ -3,6 +3,9 @@ from parm_dziluma import depth_limited_search, print_depth_limited_search, limit
 from minimaks import minimaks_algorithm
 from alfabeta import alfabeta_algorithm
 import global_variables
+import MIP_front
+import logging
+import time
 # from heuristic import calculate_heuristic
 
 global currentNode
@@ -65,20 +68,29 @@ def computer_logic(chosen_algorithm, ui_input=None, ui_limit=None):
     #print("chosenPlayer",global_variables.chosenPlayer," algorithm",chosenAlgorithm)
     #while currentNode.number < 300000:
     i=0
-    while currentNode.number < 300000 and i<other_limit:
+    total_visited_nodes=0
+
+    logging.basicConfig(filename="game.log", level=logging.INFO, datefmt="%H:%M:%S.%f")
+   
+
+    if(currentNode.number < 300000 and i<other_limit):
         i=i+1
         print(f"number= {currentNode.number} bank= {currentNode.bank} points= {currentNode.points} her= {currentNode.heuristic} alg_val= {currentNode.algorithm_value}")
         if currentNode.player == 1:
+            global_variables.visitedNodes = 0
+            start = time.perf_counter()
             if all(child.algorithm_value is None for child in currentNode.children):
                 dfs_results = depth_limited_search(currentNode, limit)
                 if(chosenAlgorithm == 0):
                     minimaks_algorithm(currentNode, limit)
                 else:
                     alfabeta_algorithm(currentNode, limit)
+                total_visited_nodes += global_variables.visitedNodes
             currentNode = next(
                 (child for child in currentNode.children if child.algorithm_value == currentNode.algorithm_value),
-                None
-            )
+                None)
+            end = time.perf_counter()
+            logging.info(f"Gajiena laiks {(end - start) * 1000:.3f} ms, Apmekletas virsotnes {global_variables.visitedNodes}")
         else:
             userCoef = int(input("Enter your coef: "))
             currentNode = next(
@@ -91,7 +103,7 @@ def computer_logic(chosen_algorithm, ui_input=None, ui_limit=None):
         
 
     print(f"number= {currentNode.number} bank= {currentNode.bank} points= {currentNode.points} her= {currentNode.heuristic} alg_val= {currentNode.algorithm_value}")
-    
+    logging.info(f"Kopa apmekletas virsotnes {total_visited_nodes}")
 
 # tree.display()
 # print("\n🔍 DFS Результаты с эвристикой:")
@@ -107,7 +119,6 @@ def computer_logic(chosen_algorithm, ui_input=None, ui_limit=None):
 
 
 if __name__ == "__main__":
-    choose_player()
-    main__chosen_algorithm=choose_algorithm()
-    main_tree=generate_tree()
-    computer_logic(main__chosen_algorithm, main_tree)      
+    MIP_front.start_game() 
+    
+    

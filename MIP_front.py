@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import Entry, Label
+import logging
+import global_variables
 
 import main
 
@@ -22,12 +24,14 @@ def show_from_mistake_to_multiplier_screen():
     print("Current number is: ", current_number)
 
 def start_game():
+    logging.basicConfig(filename="game.log", level=logging.INFO, datefmt="%H:%M:%S.%f") 
     global current_number
     user_input = entry.get()
     if user_input.isdigit() and 20 <= int(user_input) <= 30:
         main.generate_tree(int(user_input))
         
         current_number = int(user_input)
+        logging.info(f"Sakuma skaitlis: {current_number}")
         if main.global_variables.chosenPlayer==1:
             new_number=main.computer_logic(chosenAlgorithm, main.Tree(number=current_number, player=1, children=[]), 1)
             current_number=new_number
@@ -115,13 +119,16 @@ def start_as_computer():
 
 
 def choose_algorithm(algo):
+    logging.basicConfig(filename="game.log", level=logging.INFO, datefmt="%H:%M:%S.%f") 
     global chosenAlgorithm
     if algo == "min-max":
         choose_algorithm(int(0))
         chosenAlgorithm=0
+        logging.info(f"Algoritms: Minimaksa")
     elif algo == "alpha-beta":
         choose_algorithm(int(1))
         chosenAlgorithm=1
+        logging.info(f"Algoritms: Alfa-Beta")
     else:
         return    
     print(f"Chosen algorithm: {algo}")
@@ -129,13 +136,24 @@ def choose_algorithm(algo):
     show_game_screen()
 
 def show_result_screen(winner, total_even):
+    logging.basicConfig(filename="game.log", level=logging.INFO, datefmt="%H:%M:%S.%f") 
     multiplier_frame.pack_forget()
     result_frame.pack(fill="both", expand=True)
 
     if winner == "first":
         winner_label.config(text="FIRST PLAYER WON!")
+        if global_variables.chosenPlayer == 1:
+            logging.info(f"Uzvareja dators")
+        else:
+            logging.info("Uzvareja speletajs")
     else:
         winner_label.config(text="SECOND PLAYER WON!")
+        if global_variables.chosenPlayer == -1:
+            logging.info(f"Uzvareja dators")
+        else:
+            logging.info("Uzvareja speletajs")
+
+    logging.info(f"Spele beidzas")
 
     if total_even:
         reason_label.config(text="THE TOTAL IS AN EVEN NUMBER!")

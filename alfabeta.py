@@ -1,5 +1,7 @@
+import global_variables
 limit = 3
 def alfabeta_algorithm(node, limit, alpha=float('-inf'), beta=float('inf'), depth=0): 
+    global_variables.visitedNodes += 1
     if depth > limit:
         return []
     elif depth == limit or not node.children:

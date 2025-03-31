@@ -1,11 +1,13 @@
 import global_variables
-limit = 3
+import heuristic
+
+
 def alfabeta_algorithm(node, limit, alpha=float('-inf'), beta=float('inf'), depth=0): 
-    global_variables.visitedNodes += 1
+    global_variables.visited_nodes += 1
     if depth > limit:
         return []
     elif depth == limit or not node.children:
-        node.algorithm_value = node.heuristic
+        node.algorithm_value = heuristic.calculate_heuristic(node.points, node.bank)
         return node.algorithm_value
 
     if node.player == 1:  

@@ -2,115 +2,120 @@ import tkinter as tk
 from tkinter import Entry, Label
 import logging
 import global_variables
-
 import main
+
 
 def show_game_screen():
     algorithm_choice_frame.pack_forget()
     game_frame.pack(fill="both", expand=True)
 
+
 def show_mistake_game_screen():
     game_frame.pack_forget()
     mistake_game_frame.pack(fill="both", expand=True)
 
+
 def show_multiplier_screen():
     game_frame.pack_forget()
     multiplier_frame.pack(fill="both", expand=True)
-    print("Current number is: ", current_number)
+    print("Current number is: ", global_variables.current_number)
+
 
 def show_from_mistake_to_multiplier_screen():
     mistake_game_frame.pack_forget()
     multiplier_frame.pack(fill="both", expand=True)
-    print("Current number is: ", current_number)
+    print("Current number is: ", global_variables.current_number)
+
 
 def start_game():
-    logging.basicConfig(filename="game.log", level=logging.INFO, datefmt="%H:%M:%S.%f") 
-    global current_number
+    logging.basicConfig(filename="game.log", level=logging.INFO, datefmt="%H:%M:%S.%f")
     user_input = entry.get()
     if user_input.isdigit() and 20 <= int(user_input) <= 30:
+        global_variables.current_number = int(user_input)
         main.generate_tree(int(user_input))
-        
-        current_number = int(user_input)
-        logging.info(f"Sakuma skaitlis: {current_number}")
-        if main.global_variables.chosenPlayer==1:
-            new_number=main.computer_logic(chosenAlgorithm, main.Tree(number=current_number, player=1, children=[]), 1)
-            current_number=new_number
-        current_number_label.config(text=str(current_number))
+        logging.info(f"Sakuma skaitlis: {user_input}")
+        if main.global_variables.chosen_player == 1:
+            new_number = main.computer_logic(global_variables.chosen_algorithm, main.Tree(number=global_variables.current_number, player=1, children=[]))
+            global_variables.current_number = new_number
+        current_number_label.config(text=str(global_variables.current_number))
         show_multiplier_screen()
     else:
         print("Please enter a valid number between 20 and 30")
         show_mistake_game_screen()
 
+
 def mistake_start_game():
-    global current_number
     mistake_user_input = mistake_entry.get()
     if mistake_user_input.isdigit() and 20 <= int(mistake_user_input) <= 30:
         main.generate_tree(int(mistake_user_input))
-        current_number = int(mistake_user_input)
-        if main.global_variables.chosenPlayer==1:
-            new_number=main.computer_logic(chosenAlgorithm, main.Tree(number=current_number, player=1, children=[]), 1)
-            current_number=new_number
-        current_number_label.config(text=str(current_number))
+        global_variables.current_number = int(mistake_user_input)
+        if main.global_variables.chosen_player == 1:
+            new_number = main.computer_logic(global_variables.chosen_algorithm, main.Tree(number=global_variables.current_number, player=1, children=[]))
+            global_variables.current_number = new_number
+        current_number_label.config(text=str(global_variables.current_number))
         show_from_mistake_to_multiplier_screen()
     else:
         print("Please enter a valid number between 20 and 30")
 
-def update_number(multiplier):
-    global current_number, bank_points, total_points
-    current_number *= multiplier
-    print("Player just did the move, curent number",current_number)
-    if current_number % 2 == 0:
-        total_points += 1
-    else:
-        total_points -= 1
-    if current_number % 10 == 0 or current_number % 10 == 5:
-        bank_points += 1
-    current_number_label.config(text=str(current_number))
-    bank_label.config(text=f"BANK: {bank_points}")
-    points_label.config(text=f"POINTS: {total_points}")
 
-    if current_number >= 300000:
-        final_score = total_points + bank_points
+def update_number(multiplier):
+    global_variables.current_number *= multiplier
+    print("Player just did the move, current number", global_variables.current_number)
+    if global_variables.current_number % 2 == 0:
+        global_variables.total_points += 1
+    else:
+        global_variables.total_points -= 1
+    if global_variables.current_number % 10 == 0 or global_variables.current_number % 10 == 5:
+        global_variables.bank_points += 1
+    current_number_label.config(text=str(global_variables.current_number))
+    bank_label.config(text=f"BANK: {global_variables.bank_points}")
+    points_label.config(text=f"POINTS: {global_variables.total_points}")
+
+    if global_variables.current_number >= global_variables.limit:
+        final_score = global_variables.total_points + global_variables.bank_points
         winner = "first" if final_score % 2 == 0 else "second"
         show_result_screen(winner, final_score % 2 == 0)
-    
-    
-    if current_number < 300000:
-        print("Before AI move  total_points=",total_points," bank_points=",bank_points," final_score=",(total_points+bank_points))
-        
-        new_number=main.computer_logic(chosenAlgorithm, main.Tree(number=current_number, player=1, children=[]), 1)
-        print("AI did move, number is ",new_number)
-        current_number=new_number
-        print("Now current number ", current_number)
-        
-        
-        if current_number % 2 == 0:
-            total_points += 1
-        else:
-            total_points -= 1
-        if current_number % 10 == 0 or current_number % 10 == 5:
-            bank_points += 1
-        current_number_label.config(text=str(current_number))
-        bank_label.config(text=f"BANK: {bank_points}")
-        points_label.config(text=f"POINTS: {total_points}")
 
-        if current_number >= 300000:
-            final_score = total_points + bank_points
+    if global_variables.current_number < global_variables.limit:
+        print("Before AI move  total_points=", global_variables.total_points,
+              " bank_points=", global_variables.bank_points,
+              " final_score=", (global_variables.total_points + global_variables.bank_points))
+        
+        new_number = main.computer_logic(global_variables.chosen_algorithm, main.Tree(number=global_variables.current_number, player=1, children=[]))
+        print("AI did move, number is ", new_number)
+        global_variables.current_number = new_number
+        print("Now current number ", global_variables.current_number)
+
+        if global_variables.current_number % 2 == 0:
+            global_variables.total_points += 1
+        else:
+            global_variables.total_points -= 1
+        if global_variables.current_number % 10 == 0 or global_variables.current_number % 10 == 5:
+            global_variables.bank_points += 1
+        current_number_label.config(text=str(global_variables.current_number))
+        bank_label.config(text=f"BANK: {global_variables.bank_points}")
+        points_label.config(text=f"POINTS: {global_variables.total_points}")
+
+        if global_variables.current_number >= global_variables.limit:
+            final_score = global_variables.total_points + global_variables.bank_points
             winner = "first" if final_score % 2 == 0 else "second"
             show_result_screen(winner, final_score % 2 == 0)
         
-        print("AFTER AI  total_points=",total_points," bank_points=",bank_points," final_score=",(total_points+bank_points))
-        #print(main.currentNode.player)
+        print("AFTER AI  total_points=", global_variables.total_points,
+              " bank_points=", global_variables.bank_points,
+              " final_score=", (global_variables.total_points+global_variables.bank_points))
 
 
 def show_start_choice_screen():
     rules_frame.pack_forget()
     start_choice_frame.pack(fill="both", expand=True)
 
+
 def start_as_user():
     main.choose_player(-1)
     start_choice_frame.pack_forget()
     algorithm_choice_frame.pack(fill="both", expand=True)
+
 
 def start_as_computer():
     main.choose_player(1)
@@ -119,21 +124,19 @@ def start_as_computer():
 
 
 def choose_algorithm(algo):
-    logging.basicConfig(filename="game.log", level=logging.INFO, datefmt="%H:%M:%S.%f") 
-    global chosenAlgorithm
+    logging.basicConfig(filename="game.log", level=logging.INFO, datefmt="%H:%M:%S.%f")
     if algo == "min-max":
         choose_algorithm(int(0))
-        chosenAlgorithm=0
+        global_variables.chosen_algorithm = 0
         logging.info(f"Algoritms: Minimaksa")
     elif algo == "alpha-beta":
         choose_algorithm(int(1))
-        chosenAlgorithm=1
+        global_variables.chosen_algorithm = 1
         logging.info(f"Algoritms: Alfa-Beta")
-    else:
-        return    
     print(f"Chosen algorithm: {algo}")
     algorithm_choice_frame.pack_forget()
     show_game_screen()
+
 
 def show_result_screen(winner, total_even):
     logging.basicConfig(filename="game.log", level=logging.INFO, datefmt="%H:%M:%S.%f") 
@@ -142,13 +145,13 @@ def show_result_screen(winner, total_even):
 
     if winner == "first":
         winner_label.config(text="FIRST PLAYER WON!")
-        if global_variables.chosenPlayer == 1:
+        if global_variables.chosen_player == 1:
             logging.info(f"Uzvareja dators")
         else:
             logging.info("Uzvareja speletajs")
     else:
         winner_label.config(text="SECOND PLAYER WON!")
-        if global_variables.chosenPlayer == -1:
+        if global_variables.chosen_player == -1:
             logging.info(f"Uzvareja dators")
         else:
             logging.info("Uzvareja speletajs")
@@ -165,20 +168,21 @@ def restart_game():
     result_frame.pack_forget()
     rules_frame.pack(fill="both", expand=True)
 
-    global current_number, bank_points, total_points
-    current_number = 20
-    bank_points = 0
-    total_points = 0
-    current_number_label.config(text=str(current_number))
-    bank_label.config(text=f"BANK: {bank_points}")
-    points_label.config(text=f"POINTS: {total_points}")
+    global_variables.current_number = 0
+    global_variables.bank_points = 0
+    global_variables.total_points = 0
+    global_variables.visitedNodes = 0
+    entry.delete(0, "end")
+    current_number_label.config(text=str(global_variables.current_number))
+    bank_label.config(text=f"BANK: {global_variables.bank_points}")
+    points_label.config(text=f"POINTS: {global_variables.total_points}")
 
 
-first_move_done=False
-chosenAlgorithm=0
-current_number = 20
-bank_points = 0
-total_points = 0
+first_move_done = False
+global_variables.chosen_algorithm = 0
+global_variables.current_number = 0
+global_variables.bank_points = 0
+global_variables.total_points = 0
 
 root = tk.Tk()
 root.title("Game UI")
@@ -328,13 +332,13 @@ mistake_game_frame.tag_bind("mistake_start_button", "<Button-1>", lambda event: 
 
 # --- MULTIPLIER FRAME ---
 multiplier_frame = tk.Canvas(root, bg="#6A0DAD")
-bank_label = Label(multiplier_frame, text=f"BANK: {bank_points}", font=("Comic Sans MS", 14, "bold"), fg="white", bg="#6A0DAD")
+bank_label = Label(multiplier_frame, text=f"BANK: {global_variables.bank_points}", font=("Comic Sans MS", 14, "bold"), fg="white", bg="#6A0DAD")
 bank_label.place(x=650, y=50)
-points_label = Label(multiplier_frame, text=f"POINTS: {total_points}", font=("Comic Sans MS", 14, "bold"), fg="white", bg="#6A0DAD")
+points_label = Label(multiplier_frame, text=f"POINTS: {global_variables.total_points}", font=("Comic Sans MS", 14, "bold"), fg="white", bg="#6A0DAD")
 points_label.place(x=650, y=80)
 current_label = Label(multiplier_frame, text="CURRENT NUMBER", font=("Comic Sans MS", 16, "bold"), fg="white", bg="#6A0DAD")
 current_label.pack(pady=20)
-current_number_label = Label(multiplier_frame, text=str(current_number), font=("Arial", 18), width=10, justify="center", bg="lightgray")
+current_number_label = Label(multiplier_frame, text=str(global_variables.current_number), font=("Arial", 18), width=10, justify="center", bg="lightgray")
 current_number_label.pack(pady=10)
 multiplier_label = Label(multiplier_frame, text="CHOOSE THE MULTIPLIER:", font=("Comic Sans MS", 14, "bold"), fg="white", bg="#6A0DAD")
 multiplier_label.pack(pady=20)

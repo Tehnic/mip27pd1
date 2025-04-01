@@ -112,12 +112,14 @@ def show_start_choice_screen():
 
 
 def start_as_user():
+    global_variables.chosen_player = -1
     main.choose_player(-1)
     start_choice_frame.pack_forget()
     algorithm_choice_frame.pack(fill="both", expand=True)
 
 
 def start_as_computer():
+    global_variables.chosen_player = 1
     main.choose_player(1)
     start_choice_frame.pack_forget()
     algorithm_choice_frame.pack(fill="both", expand=True)
@@ -168,6 +170,7 @@ def restart_game():
     result_frame.pack_forget()
     rules_frame.pack(fill="both", expand=True)
 
+    global_variables.chosen_player = 0
     global_variables.current_number = 0
     global_variables.bank_points = 0
     global_variables.total_points = 0
